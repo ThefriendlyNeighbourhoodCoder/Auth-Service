@@ -1,0 +1,28 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #171725c8;
+    padding: 15px 30px;
+    color: white;
+    filter: drop-shadow(0 0 0.75rem rgba(3, 0, 47, 0.629));
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.logout-btn {
+    background-color: #ff4757;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.logout-btn:hover {
+    background-color: #e8414c;
+}

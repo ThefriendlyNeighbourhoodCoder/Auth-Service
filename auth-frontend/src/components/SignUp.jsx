@@ -1,48 +1,55 @@
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/signup.css"; // Import the new CSS file
 
 const SignUp = () => {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
+    const [user, setUser] = useState({
         email: "",
         password: "",
         fullName: "",
-        phone: "",
+        phone: ""
     });
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+    const navigate = useNavigate();
 
-    const [message, setMessage] = useState("");
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
+        setError("");
+        setSuccess("");
+
         try {
-            const response = await axios.post("http://localhost:8081/auth/register", formData, {
-                headers: { "Content-Type": "application/json" },
+            const response = await fetch("http://localhost:8081/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(user),
             });
-            setMessage("✅ " + response.data);
-            setTimeout(() => navigate("/signin"), 2000); // Redirect after success
-        } catch (error) {
-            setMessage("❌ Error: " + (error.response?.data || "Failed to register"));
+
+            if (!response.ok) {
+                throw new Error("Registration failed");
+            }
+
+            setSuccess("User registered successfully! Redirecting...");
+            setTimeout(() => navigate("/signin"), 2000);
+        } catch (err) {
+            setError(err.message);
         }
     };
 
     return (
         <div className="auth-container">
             <h2>Sign Up</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="text" name="fullName" placeholder="Full Name" onChange={handleChange} required />
-                <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-                <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-                <input type="text" name="phone" placeholder="Phone Number" onChange={handleChange} required />
-                <button type="submit">Register</button>
+            {error && <p className="error">{error}</p>}
+            {success && <p className="success">{success}</p>}
+            <form onSubmit={handleRegister}>
+                <input type="text" placeholder="Full Name" value={user.fullName} onChange={(e) => setUser({...user, fullName: e.target.value})} required />
+                <input type="email" placeholder="Email" value={user.email} onChange={(e) => setUser({...user, email: e.target.value})} required />
+                <input type="password" placeholder="Password" value={user.password} onChange={(e) => setUser({...user, password: e.target.value})} required />
+                <input type="text" placeholder="Phone Number" value={user.phone} onChange={(e) => setUser({...user, phone: e.target.value})} required />
+                <button type="submit">Sign Up</button>
             </form>
-            {message && <p className="message">{message}</p>}
-            <p className="switch-auth">Already have an account? <a href="/signin">Sign In</a></p>
+            <p>Already have an account? <a href="/signin">Sign In</a></p>
         </div>
     );
 };

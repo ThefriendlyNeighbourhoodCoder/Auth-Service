@@ -1,44 +1,47 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api";
+import "../Styles/Dashboard.css"; // ✅ Updated styles
 
 const Dashboard = () => {
-    const navigate = useNavigate();
+    const [role, setRole] = useState(null);
     const [userData, setUserData] = useState(null);
-    const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (!token) {
-            navigate("/signin"); 
-        } else {
-            API.get("/dashboard")
-                .then(response => {
-                    setUserData(response.data);
-                    if (response.data.role !== "USER") {
-                        setMessage("Access Denied. Redirecting...");
-                        setTimeout(() => navigate("/signin"), 2000);
-                    }
-                })
-                .catch(() => {
-                    setMessage("Session expired. Logging out...");
-                    handleLogout();
-                });
-        }
-    }, []);
+        const userRole = localStorage.getItem("role");
 
-    const handleLogout = () => {
-        localStorage.removeItem("token");  
-        navigate("/signin");  
-    };
+        if (!token) {
+            navigate("/signin");
+        } else {
+            setRole(userRole);
+
+            fetch("http://localhost:8081/user/data", {
+                headers: { "Authorization": `Bearer ${token}` }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Unauthorized");
+                return res.json();
+            })
+            .then(data => setUserData(data))
+            .catch(() => navigate("/signin"));
+        }
+    }, [navigate]);
+
+    if (!role) return <h2>Loading...</h2>;
 
     return (
-        <div className="dashboard-container">
-            <h2>Dashboard</h2>
-            {message && <p>{message}</p>}
-            {userData ? <p>Welcome, {userData.fullName}</p> : <p>Loading user data...</p>}
-            
-            <button className="logout-button" onClick={handleLogout}>Logout</button>
+        <div className="dashboard">
+            <h1>Welcome to the {role === "ADMIN" ? "Admin" : "User"} Dashboard</h1>
+            {userData ? (
+                <div className="user-info">
+                    <p><strong>Name:</strong> {userData.fullName}</p>
+                    <p><strong>Email:</strong> {userData.email}</p>
+                    <p><strong>Phone:</strong> {userData.phone}</p>
+                </div>
+            ) : (
+                <p>Loading user data...</p>
+            )}
         </div>
     );
 };

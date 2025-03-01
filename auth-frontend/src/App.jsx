@@ -1,42 +1,28 @@
-import React from "react";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
-import SignUp from "./components/SignUp";
+import { Routes, Route, useLocation } from "react-router-dom";
 import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
 import Dashboard from "./components/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import UserDashboard from "./pages/UserDashboard";
+import Navbar from "./components/Navbar";
 
-const App = () => {
-    const navigate = useNavigate();
-    const token = localStorage.getItem("token");
-
-    const handleLogout = () => {
-        localStorage.removeItem("token"); // ✅ Remove JWT token
-        navigate("/signin"); // ✅ Redirect user to Signin page
-    };
+function App() {
+    const location = useLocation();
+    const hideNavbar = location.pathname === "/signin" || location.pathname === "/signup";
 
     return (
-        <div>
-            <nav>
-                {!token ? (
-                    <>
-                        <Link to="/signup">Sign Up</Link>
-                        <Link to="/signin">Sign In</Link>
-                    </>
-                ) : (
-                    <>
-                        <Link to="/dashboard">Dashboard</Link>
-                        <button className="logout-button" onClick={handleLogout}>Logout</button>
-                    </>
-                )}
-            </nav>
-
+        <>
+            {!hideNavbar && <Navbar />} {/* ✅ Only show Navbar after login */}
             <Routes>
-                <Route path="/signup" element={<SignUp />} />
                 <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/" element={<SignIn />} />
+                <Route path="/admin_dash" element={<AdminDashboard />} />
+                <Route path="/user_dash" element={<UserDashboard />} />
+                <Route path="*" element={<SignIn />} /> {/* ✅ Default Route */}
             </Routes>
-        </div>
+        </>
     );
-};
+}
 
 export default App;

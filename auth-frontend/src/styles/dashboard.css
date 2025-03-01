@@ -1,0 +1,24 @@
+.dashboard {
+    text-align: center;
+    margin-top: 30px;
+    color: white;
+}
+
+.dashboard h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.user-info {
+    background: #2c2c3e;
+    padding: 15px;
+    border-radius: 10px;
+    display: inline-block;
+    text-align: left;
+    max-width: 400px;
+}
+
+.user-info p {
+    font-size: 16px;
+    margin: 5px 0;
+}

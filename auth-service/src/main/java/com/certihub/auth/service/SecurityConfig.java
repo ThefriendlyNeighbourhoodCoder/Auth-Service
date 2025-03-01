@@ -32,8 +32,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/dashboard", "/protected-endpoint").hasRole("USER")  // ✅ Fix Protected Route
+                        .requestMatchers("/admin_dash").hasRole("ADMIN")                 // ✅ Only Admins can access
+                        .requestMatchers("/user_dash", "/user/data").hasRole("USER")     // ✅ Fix Protected Route
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
