@@ -102,28 +102,23 @@ The project includes **user authentication, social logins, role-based access con
 1. **Navigate to the backend folder**  
    ```sh
    cd auth-service
-Run the Spring Boot Application
-sh
-Copy
-Edit
-mvn clean spring-boot:run
-🌐 Frontend (React + Vite)
-Navigate to the frontend folder
-sh
-Copy
-Edit
-cd auth-frontend
-Install dependencies
-sh
-Copy
-Edit
-npm install
-Start the React App
-sh
-Copy
-Edit
-npm run dev
-Open Browser Visit: http://localhost:5173
+1. **Run the Spring Boot Application**
+   ```sh
+   mvn clean spring-boot:run
+
+### **🌐 Frontend (React + Vite)**
+
+3. **Navigate to the frontend folder**
+   ```sh
+   cd auth-frontend
+4. **Install dependencies**
+   ```sh 
+   npm install
+5. **Start the React App**
+   ```sh
+   npm run dev
+
+**Open Browser Visit: http://localhost:5173**
 
 ### **💬 Contributing & Issues**
 If you encounter any bugs, feature requests, or UI issues, feel free to open an issue or submit a pull request. 🚀
