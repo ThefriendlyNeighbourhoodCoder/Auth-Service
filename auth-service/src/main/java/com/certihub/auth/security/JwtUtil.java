@@ -18,7 +18,8 @@ public class JwtUtil {
     );
 
     public String generateToken(User user) {
-        return Jwts.builder()
+        String role = (user.getRole() != null) ? user.getRole().name() : "USER";
+        String token = Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
                 .claim("fullName", user.getFullName())
@@ -28,6 +29,8 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10-hour expiry
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+        System.out.println("✅ JWT Generated for: " + user.getEmail() + " | Token: " + token);
+        return token;
     }
 
     public String extractUsername(String token) {

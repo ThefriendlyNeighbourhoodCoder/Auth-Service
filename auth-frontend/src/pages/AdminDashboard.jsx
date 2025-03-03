@@ -5,10 +5,12 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const token = localStorage.getItem("jwt");
         const role = localStorage.getItem("role");
 
-        if (role !== "ADMIN") {
-            navigate("/signin"); // Redirect non-admins
+        if (!token || role !== "ADMIN") {
+            console.error("⚠️ Unauthorized access. Redirecting...");
+            navigate("/signin");
         }
     }, [navigate]);
 

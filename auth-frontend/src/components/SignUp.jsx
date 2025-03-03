@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../Styles/auth.css"; // ✅ Keeps existing styles
 
 const SignUp = () => {
     const [user, setUser] = useState({
@@ -20,9 +21,7 @@ const SignUp = () => {
         try {
             const response = await fetch("http://localhost:8081/auth/register", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(user),
             });
 
@@ -37,6 +36,19 @@ const SignUp = () => {
         }
     };
 
+    // ✅ Redirect to OAuth providers
+    const handleGoogleSignIn = () => {
+        window.location.href = "http://localhost:8081/oauth2/authorization/google";
+    };
+
+    const handleLinkedInSignIn = () => {
+        window.location.href = "http://localhost:8081/oauth2/authorization/linkedin";
+    };
+
+    const handleGitHubSignIn = () => {
+        window.location.href = "http://localhost:8081/oauth2/authorization/github";
+    };
+
     return (
         <div className="auth-container">
             <h2>Sign Up</h2>
@@ -49,7 +61,24 @@ const SignUp = () => {
                 <input type="text" placeholder="Phone Number" value={user.phone} onChange={(e) => setUser({...user, phone: e.target.value})} required />
                 <button type="submit">Sign Up</button>
             </form>
-            <p>Already have an account? <a href="/signin">Sign In</a></p>
+
+            {/* ✅ OR Separator */}
+            <div className="or-separator">or sign in with</div>
+
+            {/* ✅ Social Login Section */}
+            <div className="social-login">
+                <button className="social-icon google" onClick={handleGoogleSignIn}>
+                    <i className="fab fa-google"></i>
+                </button>
+                <button className="social-icon linkedin" onClick={handleLinkedInSignIn}>
+                    <i className="fab fa-linkedin-in"></i>
+                </button>
+                <button className="social-icon github" onClick={handleGitHubSignIn}>
+                    <i className="fab fa-github"></i>
+                </button>
+            </div>
+
+            <p>Don't have an account? <a href="/signin">Sign In</a></p>
         </div>
     );
 };

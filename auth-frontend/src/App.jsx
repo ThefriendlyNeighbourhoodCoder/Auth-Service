@@ -4,6 +4,7 @@ import SignUp from "./components/SignUp";
 import Dashboard from "./components/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import UserDashboard from "./pages/UserDashboard";
+import OAuthRedirect from "./components/OAuthRedirect";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/admin_dash" element={<AdminDashboard />} />
                 <Route path="/user_dash" element={<UserDashboard />} />
+                <Route path="/oauth-success" element={<OAuthRedirect />} />
                 <Route path="*" element={<SignIn />} /> {/* ✅ Default Route */}
             </Routes>
         </>

@@ -1,49 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../Styles/Dashboard.css"; // ✅ Updated styles
 
 const Dashboard = () => {
-    const [role, setRole] = useState(null);
-    const [userData, setUserData] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const userRole = localStorage.getItem("role");
+        const token = localStorage.getItem("jwt");
+        const role = localStorage.getItem("role");
 
-        if (!token) {
+        if (!token || !role) {
+            console.error("⚠️ No JWT or Role found. Redirecting to SignIn...");
             navigate("/signin");
-        } else {
-            setRole(userRole);
-
-            fetch("http://localhost:8081/user/data", {
-                headers: { "Authorization": `Bearer ${token}` }
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("Unauthorized");
-                return res.json();
-            })
-            .then(data => setUserData(data))
-            .catch(() => navigate("/signin"));
+            return;
         }
+
+        // ✅ Redirect based on role
+        navigate(role === "ADMIN" ? "/admin_dash" : "/user_dash");
     }, [navigate]);
 
-    if (!role) return <h2>Loading...</h2>;
-
-    return (
-        <div className="dashboard">
-            <h1>Welcome to the {role === "ADMIN" ? "Admin" : "User"} Dashboard</h1>
-            {userData ? (
-                <div className="user-info">
-                    <p><strong>Name:</strong> {userData.fullName}</p>
-                    <p><strong>Email:</strong> {userData.email}</p>
-                    <p><strong>Phone:</strong> {userData.phone}</p>
-                </div>
-            ) : (
-                <p>Loading user data...</p>
-            )}
-        </div>
-    );
+    return <p>Redirecting...</p>;
 };
 
 export default Dashboard;
