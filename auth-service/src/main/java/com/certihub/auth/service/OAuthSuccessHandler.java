@@ -10,9 +10,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+
 
 import java.io.IOException;
 import java.util.Optional;
@@ -29,42 +33,46 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
+        OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String email = oAuth2User.getAttribute("email");
-        String fullName = oAuth2User.getAttribute("name");
 
-        logger.info("🔄 Google OAuth Success! Checking user in database: {}", email);
+        // Identify provider from authentication token
+        final String provider = authToken.getAuthorizedClientRegistrationId(); // "google", "linkedin", "github"
 
-        Optional<User> existingUser = userRepository.findByEmail(email);
-        User user;
+        // Declare email and fullName as final
+        final String email;
+        final String fullName;
 
-        if (existingUser.isEmpty()) {
-            // ✅ New user: Register automatically
-            logger.warn("⚠️ Google User Not Found in Database! Creating new user...");
-
-            user = User.builder()
-                    .email(email)
-                    .fullName(fullName)
-                    .password(null)  // ✅ Google users don't have a password
-                    .role(Role.USER) // ✅ Default role is USER
-                    .build();
-
-            userRepository.save(user);
+        if (provider.equals("google") && oAuth2User instanceof OidcUser) {
+            OidcUser oidcUser = (OidcUser) oAuth2User;
+            email = oidcUser.getEmail(); // Google provides email directly
+            fullName = oidcUser.getFullName();
         } else {
-            // ✅ Existing user: Use stored data
-            user = existingUser.get();
+            email = oAuth2User.getAttribute("email");
+            fullName = oAuth2User.getAttribute("name");
         }
 
-        logger.info("✅ OAuth User Authenticated: {}", user.getEmail());
-        logger.info("✅ User Role: {}", user.getRole());
+        if (email == null || fullName == null) {
+            throw new RuntimeException("⚠️ Missing email or name from OAuth provider: " + provider);
+        }
 
-        // ✅ Generate JWT
-        String jwtToken = jwtUtil.generateToken(user);
-        logger.info("✅ Generated JWT Token: {}", jwtToken);
+        Optional<User> existingUser = userRepository.findByEmail(email);
 
-        // ✅ Redirect to Frontend with Token
-        String frontendRedirectUrl = "http://localhost:5173/oauth-success?token=" + jwtToken;
-        response.sendRedirect(frontendRedirectUrl);
+        // ✅ Fix: Use effectively final email and fullName inside lambda
+        User user = existingUser.orElseGet(() -> {
+            User newUser = new User();
+            newUser.setEmail(email);
+            newUser.setFullName(fullName);
+            newUser.setRole(Role.USER);
+            return userRepository.save(newUser);
+        });
+
+        // ✅ Generate JWT after verifying correct provider flow
+        String token = jwtUtil.generateToken(user);
+        response.sendRedirect("http://localhost:5173/oauth-success?token=" + token);
     }
+
+
 }

@@ -41,13 +41,6 @@ const SignUp = () => {
         window.location.href = "http://localhost:8081/oauth2/authorization/google";
     };
 
-    const handleLinkedInSignIn = () => {
-        window.location.href = "http://localhost:8081/oauth2/authorization/linkedin";
-    };
-
-    const handleGitHubSignIn = () => {
-        window.location.href = "http://localhost:8081/oauth2/authorization/github";
-    };
 
     return (
         <div className="auth-container">
@@ -70,10 +63,10 @@ const SignUp = () => {
                 <button className="social-icon google" onClick={handleGoogleSignIn}>
                     <i className="fab fa-google"></i>
                 </button>
-                <button className="social-icon linkedin" onClick={handleLinkedInSignIn}>
+                <button className="social-icon linkedin">
                     <i className="fab fa-linkedin-in"></i>
                 </button>
-                <button className="social-icon github" onClick={handleGitHubSignIn}>
+                <button className="social-icon github">
                     <i className="fab fa-github"></i>
                 </button>
             </div>

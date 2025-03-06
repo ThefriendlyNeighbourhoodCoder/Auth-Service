@@ -5,10 +5,16 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
+        localStorage.removeItem("jwt");
         localStorage.removeItem("role");
-        window.location.href = "/signin";
+        sessionStorage.clear();  // Clears all session storage
+        document.cookie.split(";").forEach(cookie => { 
+            document.cookie = cookie.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        }); // Clears all cookies
+    
+        window.location.href = "/signin"; // 🔄 Force reload to clear everything
     };
+    
 
     return (
         <nav className="navbar">
