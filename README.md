@@ -1,141 +1,141 @@
-# 🚀 CertifyHub - Authentication System
+# CertifyHub - Authentication Service (Auth-Service)
 
-## 📌 Project Overview
-CertifyHub is a **secure authentication system** built using:
-- **Backend:** Spring Boot (Java), MySQL, JWT authentication.
-- **Frontend:** React (Vite), React Router, Tailwind/CSS.
+🚀 **CertifyHub** is a full-featured authentication system built with **Spring Boot** (backend) and **React + Vite** (frontend). It supports **JWT-based authentication, OAuth login (Google, GitHub, Discord), and role-based access control (RBAC).**
 
-The project includes **user authentication, social logins, role-based access control (RBAC), and secure logout** with a clean and responsive UI.
+## 🔹 Features Implemented
 
----
+### ✅ Backend (Spring Boot)
+- **JWT Authentication** – Secure login and token-based authentication.
+- **OAuth Authentication** – Google, GitHub, and Discord login.
+- **RBAC (Role-Based Access Control)** – Separate User/Admin access.
+- **Sessionless Security** – Stateless API with Spring Security.
+- **Password Encryption** – Secure hashing with BCrypt.
+- **User Management** – Store user details in MySQL.
+- **Token Blacklisting** – Prevents JWT reuse after logout.
 
-## ✅ Features Implemented
-### **1️⃣ Authentication System**
-✔️ **User Signup & Login** with JWT authentication.  
-✔️ **Password Encryption** using `BCryptPasswordEncoder`.  
-✔️ **JWT Token-Based Authorization** for secure API access.  
-✔️ **Google OAuth Integration** for seamless social login.  
+### ✅ Frontend (React + Vite)
+- **Modern UI** – Fully responsive with `auth.css`.
+- **Role-Based Navigation** – Redirects users/admins correctly.
+- **Secure LocalStorage Handling** – Stores JWT & role safely.
+- **OAuth Redirection Handling** – Ensures smooth Google/GitHub login experience.
+- **Dashboard System** – User/Admin dashboards with session validation.
+- **Protected Routes** – Prevents unauthorized access.
 
-### **2️⃣ Role-Based Access Control (RBAC)**
-✔️ **Admin & User Roles** (`ADMIN`, `USER`).  
-✔️ **Protected Routes** (`/admin_dash`, `/user_dash`).  
-✔️ **Role-Based Redirection** (Admins → `/admin_dash`, Users → `/user_dash`).  
+## 🚀 Tech Stack
 
-### **3️⃣ Secure Logout & Session Handling**
-✔️ **Logout fully clears JWT token** and redirects to `/signin`.  
-✔️ **Fix for previous user session persisting after logout**.  
-✔️ **Full page refresh after OAuth login/logout**.  
+### 🔹 Backend
+- **Spring Boot 3.4.3**
+- **Spring Security 6.x**
+- **OAuth2 Client**
+- **JWT (Json Web Token)**
+- **Hibernate + JPA (MySQL)**
+- **Maven**
+- **Lombok**
 
-### **4️⃣ UI & User Experience Enhancements**
-✔️ **Improved SignIn & SignUp UI** with modern design.  
-✔️ **Fully integrated Google OAuth login with proper branding**.  
-✔️ **LinkedIn & GitHub login buttons added (awaiting backend implementation).**  
-✔️ **Social login buttons now match professional web standards**.  
-✔️ **Navbar appears only after login**, following real-world authentication flows.  
+### 🔹 Frontend
+- **React 18 + Vite**
+- **React Router DOM**
+- **Tailwind CSS / Custom CSS**
+- **FontAwesome (Icons)**
+- **LocalStorage (Token Storage)**
 
----
+## 📌 Installation Guide
 
-## 📌 Development Plan & Execution
-### **✅ Backend Implementation**
-1. **Implemented Password-Based Authentication**
-   - Secure signup & login with `BCryptPasswordEncoder` and JWT.
-   - Role-based authorization (`ADMIN`, `USER`).
+### 🔹 Backend Setup
 
-2. **Added Google OAuth 2.0 Authentication**
-   - Users can log in with Google.
-   - First-time Google users are automatically created in the database.
-   - Proper JWT token generation & storage.
+Clone the repository:
+```bash
+git clone https://github.com/yourusername/certifyhub-auth-service.git
+cd certifyhub-auth-service/auth-backend
+```
 
-3. **Fixed Logout & Session Management**
-   - Ensured **full logout (clears JWT, localStorage, session)**.
-   - Fixed issue where **previous user session persisted**.
+Configure database in `src/main/resources/application.properties`:
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/certifyhub
+spring.datasource.username=root
+spring.datasource.password=yourpassword
+```
 
----
+Run the backend using Maven:
+```bash
+mvn spring-boot:run
+```
 
-## 🔮 Future Development Plans
-### **🛠 Backend Enhancements**
-- **🔄 Implement LinkedIn & GitHub OAuth 2.0** for social login.  
-- **📩 Implement Email Verification** (send confirmation email after signup).  
-- **🔄 Refresh Tokens** (JWT token expiration with auto-refresh).  
+Backend should be running at [http://localhost:8081/](http://localhost:8081/).
 
-### **🎨 Frontend UI Enhancements**
-- **Improve Dashboard UI** (Charts, Widgets, Graphs).  
-- **Dark Mode Toggle** for better user experience.  
-- **Enhance Mobile Responsiveness** for authentication pages.  
+### 🔹 Frontend Setup
 
-### **⚡ Security & Performance Optimization**
-- **Multi-Factor Authentication (MFA)** via OTP.  
-- **Account Locking After Multiple Failed Logins**.  
-- **Implement Password Reset via Email**.  
-- **Optimize API performance & caching mechanisms**.  
+Navigate to the frontend folder:
+```bash
+cd ../auth-frontend
+```
 
----
+Install dependencies:
+```bash
+npm install
+```
 
-## 🚀 Future Features
-- **🔐 Multi-Factor Authentication (MFA)**
-- **🔄 Refresh Token Implementation**
-- **📊 User Analytics & Activity Logs**
-- **🔄 OAuth for LinkedIn & GitHub**
-- **🛡️ Security Hardening (Rate Limiting, Brute Force Protection)**
-- **🖼️ Profile Picture Uploads**
-- **📱 Mobile-Friendly UI Enhancements**
+Start the frontend:
+```bash
+npm run dev
+```
 
----
+Frontend should be running at [http://localhost:5173/](http://localhost:5173/).
 
-## 🛑 Open Issues & Fixes Needed
-1. **⚠️ LinkedIn & GitHub OAuth Not Implemented Yet**  
-   - Social login buttons exist but backend OAuth processing is pending.  
-   - Users clicking **LinkedIn/GitHub** are not redirected to an actual OAuth provider yet.  
+## 🛠️ API Endpoints
 
-2. **⚠️ Email Verification Not Yet Implemented**  
-   - Users can log in immediately after signup.  
-   - We need to send a **verification email** before allowing login.  
+### 🔹 Authentication
 
-3. **⚠️ Password Reset Feature Pending**  
-   - No password reset functionality exists yet.  
-   - Need to implement **forgot password via email** flow.  
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST   | `/auth/register` | Register a new user |
+| POST   | `/auth/login` | Login user, returns JWT |
+| POST   | `/auth/logout` | Logs out user, blacklists JWT |
+| GET    | `/oauth2/authorization/google` | Redirects to Google OAuth |
+| GET    | `/oauth2/authorization/github` | Redirects to GitHub OAuth |
+| GET    | `/oauth2/authorization/discord` | Redirects to Discord OAuth |
 
----
+### 🔹 User API
 
-## 💡 How to Run the Project
-### **🖥️ Backend (Spring Boot)**
-1. **Navigate to the backend folder**  
-   ```sh
-   cd auth-service
-1. **Run the Spring Boot Application**
-   ```sh
-   mvn clean spring-boot:run
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET    | `/user/data` | Fetch logged-in user data |
 
-### **🌐 Frontend (React + Vite)**
+## 📌 Project Folder Structure
 
-3. **Navigate to the frontend folder**
-   ```sh
-   cd auth-frontend
-4. **Install dependencies**
-   ```sh 
-   npm install
-5. **Start the React App**
-   ```sh
-   npm run dev
+```bash
+CertifyHub/
+│── auth-service/        # Spring Boot backend
+│   ├── src/main/java/com/certihub/auth/
+│   │   ├── controller/  # API Controllers
+│   │   ├── service/     # Business Logic
+│   │   ├── model/       # Entities (User, Role)
+│   │   ├── repository/  # Database Access
+│   │   ├── security/    # JWT & OAuth Config
+│── auth-frontend/       # React + Vite frontend
+│   ├── src/
+│   │   ├── components/  # UI Components
+│   │   ├── pages/       # Dashboard, SignIn, SignUp
+│   │   ├── styles/      # CSS Styles
+```
 
-**Open Browser Visit: http://localhost:5173**
+## 🔍 Next Steps & Enhancements
 
-### **💬 Contributing & Issues**
-If you encounter any bugs, feature requests, or UI issues, feel free to open an issue or submit a pull request. 🚀
+🔜 **LinkedIn OAuth Integration**  
+🔜 **Email Verification after Signup**  
+🔜 **Multi-Factor Authentication (MFA)**  
+🔜 **Refresh Token Implementation**  
+🔜 **Admin Panel for User Management**  
+🔜 **Role & Permission Management UI**  
 
-### **🎯 Final Notes**
-This project is an excellent starting point for secure, scalable authentication in React & Spring Boot. With upcoming enhancements like OAuth for LinkedIn & GitHub, MFA, and email verification, it will evolve into a fully production-ready authentication system. 💡🔥
+## 📌 Contributors
+👤 **Akash Patra**  
+🔗 [GitHub](https://github.com/ThefriendlyNeighbourhoodCoder) | [LinkedIn](https://www.linkedin.com/in/akash-patra04/)  
 
-### **👥 Authors**
-- [Akash Patra](https://github.com/ThefriendlyNeighbourhoodCoder)
-- [Nayan Adhikary](https://github.com/Nayan-Adhikari)
+## 🚀 Ready to Contribute?
 
----
+We welcome contributions!  
+Feel free to **fork the repo and submit pull requests**. 🎯  
 
-### 🔥 **What's Updated?**
-✅ **Includes Google OAuth 2.0 Implementation**  
-✅ **Acknowledges pending LinkedIn & GitHub OAuth work**  
-✅ **Summarizes UI enhancements (social logins, full logout, responsive design)**  
-✅ **Clearly defines next steps: Email Verification, MFA, and Security Upgrades**  
 
----
+⚡ **Star ⭐ the Repository If You Like It!**
