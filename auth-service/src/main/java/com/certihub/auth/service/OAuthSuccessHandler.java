@@ -4,29 +4,26 @@ import com.certihub.auth.model.Role;
 import com.certihub.auth.model.User;
 import com.certihub.auth.repository.UserRepository;
 import com.certihub.auth.security.JwtUtil;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import java.io.IOException;
 import java.util.Optional;
 
 @Component
-public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
-    private static final Logger logger = LoggerFactory.getLogger(OAuthSuccessHandler.class);
+public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
+    @Autowired
     public OAuthSuccessHandler(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
@@ -34,45 +31,45 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
-        OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+                                        Authentication authentication) throws IOException {
+        System.out.println("🟢 OAuth Success Handler triggered");
 
-        // Identify provider from authentication token
-        final String provider = authToken.getAuthorizedClientRegistrationId(); // "google", "linkedin", "github"
+        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+        OAuth2User oAuth2User = oauthToken.getPrincipal();
 
-        // Declare email and fullName as final
-        final String email;
-        final String fullName;
+        String email = (String) oAuth2User.getAttribute("email");
+        String fullName = (String) oAuth2User.getAttribute("name");
 
-        if (provider.equals("google") && oAuth2User instanceof OidcUser) {
-            OidcUser oidcUser = (OidcUser) oAuth2User;
-            email = oidcUser.getEmail(); // Google provides email directly
-            fullName = oidcUser.getFullName();
-        } else {
-            email = oAuth2User.getAttribute("email");
-            fullName = oAuth2User.getAttribute("name");
+        System.out.println("🟢 Extracted Email: " + email);
+        System.out.println("🟢 Extracted Full Name: " + fullName);
+
+        if (email == null || email.isEmpty()) {
+            email = oAuth2User.getAttribute("login") + "@github.com";
         }
 
-        if (email == null || fullName == null) {
-            throw new RuntimeException("⚠️ Missing email or name from OAuth provider: " + provider);
-        }
-
-        Optional<User> existingUser = userRepository.findByEmail(email);
-
-        // ✅ Fix: Use effectively final email and fullName inside lambda
-        User user = existingUser.orElseGet(() -> {
+        // ✅ Ensure user is stored in DB
+        String finalEmail = email;
+        User user = userRepository.findByEmail(email).orElseGet(() -> {
             User newUser = new User();
-            newUser.setEmail(email);
+            newUser.setEmail(finalEmail);
             newUser.setFullName(fullName);
-            newUser.setRole(Role.USER);
+            newUser.setRole(Role.valueOf("USER")); // Default Role
+            System.out.println("🟢 Creating New User in DB: " + finalEmail);
             return userRepository.save(newUser);
         });
 
-        // ✅ Generate JWT after verifying correct provider flow
-        String token = jwtUtil.generateToken(user);
-        response.sendRedirect("http://localhost:5173/oauth-success?token=" + token);
+        // ✅ Generate JWT Token
+        String jwtToken = jwtUtil.generateToken(user);
+        System.out.println("🔑 Generated JWT: " + jwtToken);
+
+        // ✅ Build the frontend redirection URL
+        String redirectUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:5173/auth-success")
+                .queryParam("token", jwtToken)
+                .queryParam("role", user.getRole())
+                .build().toUriString();
+
+        System.out.println("🔄 Redirecting to: " + redirectUrl);
+
+        response.sendRedirect(redirectUrl);
     }
-
-
 }

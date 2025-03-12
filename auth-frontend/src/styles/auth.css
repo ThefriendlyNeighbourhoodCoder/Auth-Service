@@ -125,13 +125,13 @@ body {
     font-size: 25px;
 }
 
-.social-icon.linkedin {
-    background: #0077b5;
+.social-icon.discord {
+    background: #7289da;
     font-size: 22px;
 }
 
-.social-icon.linkedin:hover {
-    background: #005582;
+.social-icon.discord:hover {
+    background: #5d70b2;
     font-size: 25px;
 }
 

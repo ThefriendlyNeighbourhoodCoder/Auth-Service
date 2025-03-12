@@ -35,6 +35,14 @@ const SignIn = () => {
         window.location.href = "http://localhost:8081/oauth2/authorization/google";
     };
 
+    const handleGitHubSignIn = () => {
+        window.location.href = "http://localhost:8081/oauth2/authorization/github";
+    };
+
+    const handleDiscordSignIn = () => {
+        window.location.href = "http://localhost:8081/oauth2/authorization/discord";
+    };
+
 
     return (
         <div className="auth-container">
@@ -54,10 +62,10 @@ const SignIn = () => {
                 <button className="social-icon google" onClick={handleGoogleSignIn}>
                     <i className="fab fa-google"></i>
                 </button>
-                <button className="social-icon linkedin">
-                    <i className="fab fa-linkedin-in"></i>
+                <button className="social-icon discord" onClick={handleDiscordSignIn}>
+                    <i className="fa-brands fa-discord"></i>
                 </button>
-                <button className="social-icon github">
+                <button className="social-icon github" onClick={handleGitHubSignIn}>
                     <i className="fab fa-github"></i>
                 </button>
             </div>

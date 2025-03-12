@@ -1,42 +1,34 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const OAuthRedirect = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        console.log("🌍 Full URL:", window.location.href);
-        const params = new URLSearchParams(window.location.search);
+        console.log("🔄 OAuthRedirect: Processing Query Params...");
+
+        // ✅ Extract token & role from URL
+        const params = new URLSearchParams(location.search);
         const token = params.get("token");
+        const role = params.get("role");
 
-        if (token) {
-            console.log("✅ OAuth Token Captured:", token);
-
-            // ✅ Store token before navigating
+        if (token && role) {
+            console.log("✅ OAuth Success! Storing JWT:", token);
+            
+            // ✅ Store in localStorage
             localStorage.setItem("jwt", token);
+            localStorage.setItem("role", role);
 
-            try {
-                const payload = JSON.parse(atob(token.split(".")[1]));
-                console.log("🔑 Decoded JWT:", payload);
-
-                const role = payload.role;
-                localStorage.setItem("role", role);
-
-                // ✅ Ensure token is stored before navigating
-                setTimeout(() => {
-                    navigate(role === "ADMIN" ? "/admin_dash" : "/user_dash");
-                }, 100); // Small delay to ensure token is stored
-            } catch (error) {
-                console.error("⚠️ Error decoding JWT:", error);
-                navigate("/signin");
-            }
+            // ✅ Force reload so App.jsx detects changes
+            window.location.href = role === "ADMIN" ? "/admin_dash" : "/user_dash";
         } else {
-            console.error("⚠️ No token found in URL");
+            console.error("⚠️ OAuthRedirect: Missing Token or Role!");
             navigate("/signin");
         }
-    }, [navigate]);
+    }, [location, navigate]);
 
-    return <p>Redirecting...</p>;
+    return <p>Processing OAuth login...</p>;
 };
 
 export default OAuthRedirect;

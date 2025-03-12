@@ -14,14 +14,6 @@ const UserDashboard = () => {
             return;
         }
 
-        // ✅ Fix: Use correct role check
-        const role = localStorage.getItem("role");
-        if (role !== "USER") {
-            console.error("⚠️ Incorrect role. Redirecting...");
-            navigate("/signin");
-            return;
-        }
-
         fetch("http://localhost:8081/user/data", {
             method: "GET",
             headers: {
@@ -30,10 +22,16 @@ const UserDashboard = () => {
             }
         })
         .then((res) => {
-            if (!res.ok) throw new Error("Unauthorized or network error");
+            if (res.status === 401) {
+                console.error("⚠️ Unauthorized! Redirecting to SignIn...");
+                navigate("/signin");
+                return null;
+            }
             return res.json();
         })
-        .then((data) => setUser(data))
+        .then((data) => {
+            if (data) setUser(data);
+        })
         .catch((err) => {
             console.error("⚠️ Error fetching user data:", err);
             navigate("/signin");
