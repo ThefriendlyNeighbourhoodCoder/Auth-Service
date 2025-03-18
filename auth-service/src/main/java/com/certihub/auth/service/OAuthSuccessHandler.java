@@ -54,6 +54,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             newUser.setEmail(finalEmail);
             newUser.setFullName(fullName);
             newUser.setRole(Role.valueOf("USER")); // Default Role
+            newUser.setVerified(true);
             System.out.println("🟢 Creating New User in DB: " + finalEmail);
             return userRepository.save(newUser);
         });

@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -20,23 +22,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginUser(@RequestBody User user) {
-        // Authenticate user and generate token
-        String token = authService.loginUser(user.getEmail(), user.getPassword());
+    public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user) {
+        Map<String, String> response = authService.loginUser(user.getEmail(), user.getPassword());
 
-        // Retrieve the full user details to check the role.
-        User loggedInUser = authService.getUserByEmail(user.getEmail());
+        // 🔍 DEBUG LOG
+        System.out.println("🔍 Response from loginUser(): " + response);
 
-        String role = loggedInUser.getRole().name();
-
-        // Determine the redirect URL based on role
-        String redirectUrl = role.equalsIgnoreCase("USER")
-                ? "/user_dash"
-                : role.equalsIgnoreCase("ADMIN")
-                ? "/admin_dash"
-                : "/"; // default route if role is unrecognized
-
-        return ResponseEntity.ok(new LoginResponse(token, redirectUrl));
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")
@@ -46,4 +38,15 @@ public class AuthController {
         authService.logoutUser(token);
         return ResponseEntity.ok("Logged out successfully");
     }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<Map<String, String>> verifyOtp(@RequestParam String email, @RequestParam String otp) {
+        return ResponseEntity.ok(authService.verifyOtp(email, otp));
+    }
+
+    @PostMapping("/resend-otp")
+    public ResponseEntity<String> resendOtp(@RequestParam String email) {
+        return ResponseEntity.ok(authService.resendOtp(email));
+    }
+
 }

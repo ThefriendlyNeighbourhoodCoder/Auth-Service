@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../Styles/auth.css"; // ✅ Keeps existing styles
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../styles/auth.css"; // ✅ Uses global styles
 
 const SignUp = () => {
     const [user, setUser] = useState({
@@ -9,14 +11,12 @@ const SignUp = () => {
         fullName: "",
         phone: ""
     });
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        setError("");
-        setSuccess("");
+        setLoading(true);
 
         try {
             const response = await fetch("http://localhost:8081/auth/register", {
@@ -26,17 +26,20 @@ const SignUp = () => {
             });
 
             if (!response.ok) {
-                throw new Error("Registration failed");
+                throw new Error("Registration failed. Please try again.");
             }
 
-            setSuccess("User registered successfully! Redirecting...");
+            toast.success("Account Created! Redirecting to Sign-In...", { autoClose: 3000 });
+
             setTimeout(() => navigate("/signin"), 2000);
         } catch (err) {
-            setError(err.message);
+            toast.error(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
-    // ✅ Redirect to OAuth providers
+    //  Redirect to OAuth providers
     const handleGoogleSignIn = () => {
         window.location.href = "http://localhost:8081/oauth2/authorization/google";
     };
@@ -48,26 +51,26 @@ const SignUp = () => {
     const handleDiscordSignIn = () => {
         window.location.href = "http://localhost:8081/oauth2/authorization/discord";
     };
-    
-
 
     return (
         <div className="auth-container">
+            <ToastContainer />
             <h2>Sign Up</h2>
-            {error && <p className="error">{error}</p>}
-            {success && <p className="success">{success}</p>}
+
             <form onSubmit={handleRegister}>
                 <input type="text" placeholder="Full Name" value={user.fullName} onChange={(e) => setUser({...user, fullName: e.target.value})} required />
                 <input type="email" placeholder="Email" value={user.email} onChange={(e) => setUser({...user, email: e.target.value})} required />
                 <input type="password" placeholder="Password" value={user.password} onChange={(e) => setUser({...user, password: e.target.value})} required />
                 <input type="text" placeholder="Phone Number" value={user.phone} onChange={(e) => setUser({...user, phone: e.target.value})} required />
-                <button type="submit">Sign Up</button>
+                <button type="submit" disabled={loading}>
+                    {loading ? "Processing..." : "Sign Up"}
+                </button>
             </form>
 
-            {/* ✅ OR Separator */}
+            {/* OR Separator */}
             <div className="or-separator">or sign in with</div>
 
-            {/* ✅ Social Login Section */}
+            {/* Social Login Section */}
             <div className="social-login">
                 <button className="social-icon google" onClick={handleGoogleSignIn}>
                     <i className="fab fa-google"></i>

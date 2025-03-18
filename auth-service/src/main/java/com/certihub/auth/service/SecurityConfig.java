@@ -24,7 +24,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ClientRegistrationRepository clientRegistrationRepository;
-    private final OAuthSuccessHandler oAuthSuccessHandler; // ✅ Custom OAuth Success Handler
+    private final OAuthSuccessHandler oAuthSuccessHandler; //Custom OAuth Success Handler
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
                           ClientRegistrationRepository clientRegistrationRepository,
@@ -37,24 +37,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Fix CORS
-                .csrf(AbstractHttpConfigurer::disable) // ❌ No need for CSRF with JWT
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) //Fix CORS
+                .csrf(AbstractHttpConfigurer::disable) //No need for CSRF with JWT
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ✅ Fix CORS Preflight issue
-                        .requestMatchers("/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll() // ✅ Allow public endpoints
-                        .requestMatchers("/user/data").authenticated() // ✅ Protect API
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //Fix CORS Preflight issue
+                        .requestMatchers("/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll() //Allow public endpoints
+                        .requestMatchers("/user/data").authenticated() //Protect API
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // ✅ JWT-based
                 .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oAuthSuccessHandler) // ✅ Use custom success handler for redirect
+                        .successHandler(oAuthSuccessHandler) //Use custom success handler for redirect
                 )
                 .logout(logout -> logout
-                        .logoutSuccessHandler(oidcLogoutSuccessHandler()) // ✅ OIDC Logout Handling
+                        .logoutSuccessHandler(oidcLogoutSuccessHandler()) //OIDC Logout Handling
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // ✅ Keep JWT Filter
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); //Keep JWT Filter
 
         return http.build();
     }

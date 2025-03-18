@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Transactional
 @Entity
 @Data
@@ -24,6 +26,15 @@ public class User {
     private String fullName;
     private String phone;
 
-    @Enumerated(EnumType.STRING) // ✅ Added role field
+    @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(nullable = true)
+    private String otpCode;
+
+    @Column(nullable = true)
+    private LocalDateTime otpExpiry;
+
+    @Column(nullable = false)
+    private boolean isVerified = false;
 }

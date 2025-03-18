@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../styles/auth.css"; // ✅ Uses global styles
 
 const SignIn = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError("");
+        setLoading(true);
 
         try {
             const response = await fetch("http://localhost:8081/auth/login", {
@@ -18,15 +21,32 @@ const SignIn = () => {
                 body: JSON.stringify({ email, password }),
             });
 
-            if (!response.ok) throw new Error("Invalid credentials");
+            if (!response.ok) throw new Error("Invalid credentials. Please try again.");
 
             const data = await response.json();
-            localStorage.setItem("jwt", data.token);
-            localStorage.setItem("role", data.redirectUrl === "/admin_dash" ? "ADMIN" : "USER");
 
-            navigate(data.redirectUrl);
+            if (data.token) {
+                localStorage.setItem("jwt", data.token);
+                localStorage.setItem("role", data.redirectUrl === "/admin_dash" ? "ADMIN" : "USER");
+                localStorage.setItem("isVerified", "true");
+
+                toast.success("Login Successful! Redirecting...");
+
+                setTimeout(() => navigate(data.redirectUrl), 1000);
+            } else if (data.redirectUrl === "/verify-otp") {
+                localStorage.setItem("email", email);
+                localStorage.setItem("isVerified", "false");
+
+                toast.info("OTP Sent! Redirecting to Verification...");
+
+                setTimeout(() => navigate("/verify-otp"), 1000);
+            } else {
+                toast.error("Something went wrong. Please try again.");
+                setLoading(false);
+            }
         } catch (err) {
-            setError(err.message);
+            toast.error(err.message);
+            setLoading(false);
         }
     };
 
@@ -43,21 +63,24 @@ const SignIn = () => {
         window.location.href = "http://localhost:8081/oauth2/authorization/discord";
     };
 
-
     return (
         <div className="auth-container">
+            <ToastContainer />
             <h2>Sign In</h2>
-            {error && <p className="error">{error}</p>}
-            <form onSubmit={handleLogin}>
-                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                <button type="submit">Sign In</button>
-            </form>
+            {loading ? <p>Redirecting...</p> : (
+                <form onSubmit={handleLogin}>
+                    <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                    <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                    <button type="submit" disabled={loading}>
+                        {loading ? "Processing..." : "Sign In"}
+                    </button>
+                </form>
+            )}
 
-            {/* ✅ OR Separator */}
+            {/* OR Separator */}
             <div className="or-separator">or sign in with</div>
 
-            {/* ✅ Social Login Section */}
+            {/* Social Login Section */}
             <div className="social-login">
                 <button className="social-icon google" onClick={handleGoogleSignIn}>
                     <i className="fab fa-google"></i>
