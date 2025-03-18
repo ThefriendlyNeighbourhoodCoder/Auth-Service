@@ -1,141 +1,111 @@
-# CertifyHub - Authentication Service (Auth-Service)
 
-🚀 **CertifyHub** is a full-featured authentication system built with **Spring Boot** (backend) and **React + Vite** (frontend). It supports **JWT-based authentication, OAuth login (Google, GitHub, Discord), and role-based access control (RBAC).**
+# Authentication System – README.md
 
-## 🔹 Features Implemented
+## 📌 Overview
+This project is a full-fledged authentication system built with **React (frontend)** and **Spring Boot (backend)**. It supports **password-based authentication, OAuth login, OTP-based email verification**, and includes **role-based access control (RBAC)** for Admin and User dashboards.
 
-### ✅ Backend (Spring Boot)
-- **JWT Authentication** – Secure login and token-based authentication.
-- **OAuth Authentication** – Google, GitHub, and Discord login.
-- **RBAC (Role-Based Access Control)** – Separate User/Admin access.
-- **Sessionless Security** – Stateless API with Spring Security.
-- **Password Encryption** – Secure hashing with BCrypt.
-- **User Management** – Store user details in MySQL.
-- **Token Blacklisting** – Prevents JWT reuse after logout.
+## ✅ Features Implemented
 
-### ✅ Frontend (React + Vite)
-- **Modern UI** – Fully responsive with `auth.css`.
-- **Role-Based Navigation** – Redirects users/admins correctly.
-- **Secure LocalStorage Handling** – Stores JWT & role safely.
-- **OAuth Redirection Handling** – Ensures smooth Google/GitHub login experience.
-- **Dashboard System** – User/Admin dashboards with session validation.
-- **Protected Routes** – Prevents unauthorized access.
+### 🔹 1. Password-Based Authentication
+✔ **User Registration** – Sign up with email, password, full name, and phone number.  
+✔ **JWT-Based Authentication** – Secure login with token storage in `localStorage`.  
+✔ **Role-Based Access Control (RBAC)** – Separate User & Admin dashboards.  
 
-## 🚀 Tech Stack
+### 🔹 2. OTP-Based Email Verification
+✔ **Unverified users are redirected to** `/verify-otp`.  
+✔ **OTP is sent to registered email** for verification.  
+✔ **Resend OTP option** with security measures.  
+✔ **Users cannot log in without verification.**  
 
-### 🔹 Backend
-- **Spring Boot 3.4.3**
-- **Spring Security 6.x**
-- **OAuth2 Client**
-- **JWT (Json Web Token)**
-- **Hibernate + JPA (MySQL)**
-- **Maven**
-- **Lombok**
+### 🔹 3. OAuth-Based Authentication
+✔ **Google, GitHub, and Discord login support.**  
+✔ **OAuth users are automatically marked as verified.**  
+✔ **JWT token is issued after successful OAuth login.**  
 
-### 🔹 Frontend
-- **React 18 + Vite**
-- **React Router DOM**
-- **Tailwind CSS / Custom CSS**
-- **FontAwesome (Icons)**
-- **LocalStorage (Token Storage)**
+### 🔹 4. Logout & Security
+✔ **Clicking logout clears JWT and redirects to** `/signin`.  
+✔ **Protected routes** (users cannot access dashboards without login).  
+✔ **Unauthorized access redirects to** `/signin`.  
 
-## 📌 Installation Guide
+### 🔹 5. UI & UX Enhancements
+✔ **Global toast notifications** for better user feedback.  
+✔ **Optimized state management** for smooth navigation.  
+✔ **Navbar appears only for logged-in users.**  
+✔ **Modern and responsive UI design.**  
+
+## 🔹 6. API Endpoints (Backend)
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/auth/register` | POST | Register a new user |
+| `/auth/login` | POST | Login with email & password |
+| `/auth/verify-otp` | POST | Verify OTP for email confirmation |
+| `/auth/resend-otp` | POST | Resend OTP to email |
+| `/oauth2/authorization/{provider}` | GET | Redirect to OAuth provider (Google, GitHub, Discord) |
+| `/auth/logout` | POST | Logout user and clear session |
+
+## 📌 Tech Stack
+
+### Frontend (React)
+✔ **React Router DOM** for navigation  
+✔ **React Toastify** for notifications  
+✔ **JWT Handling with `localStorage`**  
+✔ **Styled components** for UI consistency  
+
+### Backend (Spring Boot)
+✔ **Spring Security + JWT** for authentication  
+✔ **MySQL/PostgreSQL database integration**  
+✔ **OAuth2 login via Google, GitHub, Discord**  
+✔ **Email OTP service for verification**  
+
+## 📌 How to Run Locally
 
 ### 🔹 Backend Setup
 
-Clone the repository:
-```bash
-git clone https://github.com/yourusername/certifyhub-auth-service.git
-cd certifyhub-auth-service/auth-backend
+1️⃣ Clone the repository:
+```sh
+git clone https://github.com/your-repo/auth-service.git
 ```
-
-Configure database in `src/main/resources/application.properties`:
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/certifyhub
-spring.datasource.username=root
-spring.datasource.password=yourpassword
+2️⃣ Navigate to the backend folder:
+```sh
+cd auth-service
 ```
-
-Run the backend using Maven:
-```bash
+3️⃣ Install dependencies and run the Spring Boot app:
+```sh
+mvn clean install
 mvn spring-boot:run
 ```
 
-Backend should be running at [http://localhost:8081/](http://localhost:8081/).
-
 ### 🔹 Frontend Setup
 
-Navigate to the frontend folder:
-```bash
-cd ../auth-frontend
+1️⃣ Clone the frontend repository:
+```sh
+git clone https://github.com/your-repo/auth-frontend.git
 ```
-
-Install dependencies:
-```bash
+2️⃣ Navigate to the frontend folder:
+```sh
+cd auth-frontend
+```
+3️⃣ Install dependencies and start the frontend:
+```sh
 npm install
-```
-
-Start the frontend:
-```bash
 npm run dev
 ```
 
-Frontend should be running at [http://localhost:5173/](http://localhost:5173/).
+## 📌 Future Developments
 
-## 🛠️ API Endpoints
-
-### 🔹 Authentication
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST   | `/auth/register` | Register a new user |
-| POST   | `/auth/login` | Login user, returns JWT |
-| POST   | `/auth/logout` | Logs out user, blacklists JWT |
-| GET    | `/oauth2/authorization/google` | Redirects to Google OAuth |
-| GET    | `/oauth2/authorization/github` | Redirects to GitHub OAuth |
-| GET    | `/oauth2/authorization/discord` | Redirects to Discord OAuth |
-
-### 🔹 User API
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET    | `/user/data` | Fetch logged-in user data |
-
-## 📌 Project Folder Structure
-
-```bash
-CertifyHub/
-│── auth-service/        # Spring Boot backend
-│   ├── src/main/java/com/certihub/auth/
-│   │   ├── controller/  # API Controllers
-│   │   ├── service/     # Business Logic
-│   │   ├── model/       # Entities (User, Role)
-│   │   ├── repository/  # Database Access
-│   │   ├── security/    # JWT & OAuth Config
-│── auth-frontend/       # React + Vite frontend
-│   ├── src/
-│   │   ├── components/  # UI Components
-│   │   ├── pages/       # Dashboard, SignIn, SignUp
-│   │   ├── styles/      # CSS Styles
-```
-
-## 🔍 Next Steps & Enhancements
-
-🔜 **LinkedIn OAuth Integration**  
-🔜 **Email Verification after Signup**  
-🔜 **Multi-Factor Authentication (MFA)**  
-🔜 **Refresh Token Implementation**  
-🔜 **Admin Panel for User Management**  
-🔜 **Role & Permission Management UI**  
-
-## 📌 Contributors
-👤 **Akash Patra**  
-🔗 [GitHub](https://github.com/ThefriendlyNeighbourhoodCoder) | [LinkedIn](https://www.linkedin.com/in/akash-patra04/)  
-
-## 🚀 Ready to Contribute?
-
-We welcome contributions!  
-Feel free to **fork the repo and submit pull requests**. 🎯  
+🚀 **Upcoming Features:**  
+-  **Forgot Password & Account Recovery**  
+-  **User Profile & Dashboard Enhancements**  
+-  **Admin Panel (User Management, Logs)**  
+-  **Multi-Factor Authentication (MFA)**  
+-  **Rate Limiting & Security Enhancements**  
+-  **Preparing for Microservice Architecture**  
 
 
-⚡ **Star ⭐ the Repository If You Like It!**
+
+
+---
+
+
+✨ **Feel free to contribute!** Fork the repo and submit pull requests. **Star ⭐ the repository if you like it!** 
